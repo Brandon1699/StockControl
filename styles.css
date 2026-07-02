@@ -1,112 +1,173 @@
 :root {
-    --google-blue: #1a73e8;
-    --google-gray-bg: #f8f9fa;
-    --google-border: #dadce0;
-    --text-dark: #202124;
-    --text-secondary: #5f6368;
-    --success-green: #137333;
-    --success-bg: #e6f4ea;
-    --danger-red: #c5221f;
-    --danger-bg: #fce8e6;
+    --ios-blue: #007aff;
+    --ios-bg: #f2f2f7;
+    --ios-card-bg: #ffffff;
+    --ios-border: #e5e5ea;
+    --ios-text: #000000;
+    --ios-secondary-text: #8e8e93;
+    --ios-green: #34c759;
+    --ios-red: #ff3b30;
+    --ios-gray-button: #e9e9eb;
 }
+
 body {
-    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
-    background-color: var(--google-gray-bg);
-    color: var(--text-dark);
-    margin: 0; padding: 0;
-    display: flex; flex-direction: column; align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: var(--ios-bg);
+    color: var(--ios-text);
+    margin: 0;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0; /* Respeta notch de iPhone */
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
 }
-.header-bar {
-    width: 100%; background: white; border-bottom: 1px solid var(--google-border);
-    padding: 16px 24px; box-sizing: border-box; display: flex; align-items: center;
-}
-.header-bar h1 { font-size: 20px; margin: 0; font-weight: 400; color: var(--text-dark); }
 
-.main-container {
-    width: 94%; max-width: 850px; margin: 24px 0; background: white;
-    border: 1px solid var(--google-border); border-radius: 8px;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-    overflow: hidden;
+.app-container {
+    width: 100%;
+    max-width: 430px; /* Ancho máximo iPhone Pro Max */
+    padding: 16px;
+    box-sizing: border-box;
 }
-.navigation-tabs { display: flex; background: #ffffff; border-bottom: 1px solid var(--google-border); }
+
+/* Control Segmentado Estilo Nativo iOS */
+.segmented-control {
+    display: flex;
+    background: #e3e3e8;
+    border-radius: 9px;
+    padding: 2px;
+    margin-bottom: 20px;
+}
 .tab-link {
-    flex: 1; padding: 16px; text-align: center; background: none; border: none;
-    font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer;
-    border-bottom: 3px solid transparent; transition: background 0.2s;
-    text-transform: uppercase; letter-spacing: 0.2px;
+    flex: 1;
+    padding: 7px 2px;
+    text-align: center;
+    background: none;
+    border: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1c1c1e;
+    cursor: pointer;
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.1s ease;
 }
-.tab-link:hover { background: rgba(26, 115, 232, 0.04); color: var(--google-blue); }
-.tab-link.active-tab { color: var(--google-blue); border-bottom: 3px solid var(--google-blue); }
+.tab-link svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+.tab-link.active-tab {
+    background: #ffffff;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.12), 0px 3px 1px rgba(0, 0, 0, 0.04);
+    font-weight: 600;
+}
 
-.panel-content { display: none; padding: 24px; }
+/* Tarjetas Agrupadas de iOS */
+.ios-card {
+    background: var(--ios-card-bg);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.panel-content { display: none; }
 .panel-content.active-panel { display: block; }
 
-h3 { font-size: 16px; font-weight: 500; margin-top: 0; margin-bottom: 20px; color: var(--text-dark); }
-.input-group { margin-bottom: 16px; }
-label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+h3 { font-size: 17px; font-weight: 600; margin: 0 0 16px 0; }
+.input-group { margin-bottom: 14px; }
+.input-group:last-child { margin-bottom: 0; }
+label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 400; color: #3a3a3c; }
 
+/* Inputs con estilo iOS */
 input[type="text"], input[type="number"], select {
-    width: 100%; padding: 10px 12px; border: 1px solid var(--google-border); 
-    border-radius: 4px; box-sizing: border-box; font-size: 14px; background: #ffffff;
-    font-family: inherit; color: var(--text-dark); transition: border-color 0.15s;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--ios-border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px; /* Evita que iOS haga zoom automático al enfocar */
+    background: #fafafa;
+    font-family: inherit;
 }
 input[type="text"]:focus, input[type="number"]:focus, select:focus {
-    outline: none; border-color: var(--google-blue);
+    outline: none;
+    border-color: var(--ios-blue);
+    background: #ffffff;
 }
 
-.grid-tallas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.box-talla { text-align: center; }
+.grid-tallas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.box-talla input { text-align: center; padding: 10px 4px; }
 
-.upload-options { display: flex; gap: 8px; margin-bottom: 8px; }
-.btn-upload-trigger {
-    flex: 1; background: #ffffff; color: var(--google-blue); border: 1px solid var(--google-border);
-    padding: 10px; border-radius: 4px; cursor: pointer; text-align: center; font-size: 13px; font-weight: 500;
+/* Botones Principales y Secundarios */
+.upload-options { display: flex; gap: 10px; }
+.btn-ios-secondary {
+    flex: 1; background: var(--ios-gray-button); color: var(--ios-blue);
+    padding: 12px; border-radius: 8px; cursor: pointer; text-align: center;
+    font-size: 15px; font-weight: 500; display: block;
 }
-.btn-upload-trigger:hover { background: rgba(26, 115, 232, 0.04); }
+.btn-ios-secondary:active, .btn-ios-primary:active, .btn-ios-add:active {
+    opacity: 0.6; /* Efecto nativo de presión */
+}
 input[type="file"] { display: none; }
-.preview-box-img { width: 100%; max-height: 140px; object-fit: contain; border-radius: 4px; display: none; margin-top: 8px; border: 1px dashed var(--google-border); }
+.preview-box-img { width: 100%; max-height: 140px; object-fit: contain; border-radius: 8px; display: none; margin-top: 12px; border: 1px solid var(--ios-border); }
 
-button.btn-action-primary {
-    width: 100%; background-color: var(--google-blue); color: white; border: none;
-    padding: 11px; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer;
+button.btn-ios-primary {
+    width: 100%; background-color: var(--ios-blue); color: white; border: none;
+    padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;
+    margin-top: 10px;
 }
-button.btn-action-primary:hover { background-color: #1557b0; }
+button.btn-ios-primary:disabled { background-color: #d1d1d6; color: #aeaeae; }
 
-.stock-tools { display: flex; gap: 12px; margin-bottom: 16px; }
-.search-input { flex: 2; }
-.filter-select { flex: 1; }
-.btn-sync { background: #ffffff; border: 1px solid var(--google-border); padding: 0 12px; border-radius: 4px; font-weight: 500; cursor: pointer; font-size: 13px; color: var(--text-secondary); }
+/* Controles de barra de Stock */
+.stock-tools { display: flex; gap: 8px; margin-bottom: 14px; }
+.search-input { flex: 2; padding: 10px; font-size: 15px; }
+.filter-select { flex: 1.2; padding: 10px; font-size: 14px; }
+.btn-sync-ios { background: var(--ios-gray-button); border: none; padding: 0 12px; border-radius: 8px; font-size: 16px; cursor: pointer; }
 
-.table-container { width: 100%; overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th, td { padding: 10px 12px; border-bottom: 1px solid var(--google-border); text-align: center; }
-th { background-color: #f8f9fa; font-weight: 500; color: var(--text-secondary); font-size: 11px; text-transform: uppercase; }
-tr:hover td { background-color: #f8f9fa; }
+/* Tablas optimizadas para pantallas angostas */
+.table-container { 
+    background: var(--ios-card-bg); border-radius: 10px; overflow: hidden; 
+    box-shadow: 0px 1px 2px rgba(0,0,0,0.05); width: 100%;
+}
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 12px 8px; border-bottom: 1px solid var(--ios-border); text-align: center; }
+th { background-color: #f8f9fa; font-weight: 600; color: var(--ios-secondary-text); font-size: 11px; text-transform: uppercase; }
 .cell-left { text-align: left; }
-.img-table-thumb { width: 38px; height: 38px; object-fit: cover; border-radius: 4px; border: 1px solid var(--google-border); }
+.img-table-thumb { width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid var(--ios-border); }
 
-.badge-zero { color: var(--danger-red); font-weight: 600; }
-.badge-active { color: var(--success-green); font-weight: 600; }
-.btn-row-edit { background: none; border: 1px solid var(--google-border); padding: 4px 8px; border-radius: 4px; color: var(--google-blue); cursor: pointer; }
-.btn-row-edit:hover { background: rgba(26,115,232,0.05); }
+.badge-zero { color: var(--ios-red); font-weight: 600; }
+.badge-active { color: var(--ios-text); font-weight: 400; }
+.btn-row-edit { background: none; border: none; color: var(--ios-blue); cursor: pointer; font-size: 14px; font-weight: 500; }
 
-.category-manager-layout { display: flex; flex-direction: column; gap: 20px; }
-.category-list { border: 1px solid var(--google-border); border-radius: 4px; overflow: hidden; }
-.category-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--google-border); }
+/* Vista de Categorías */
+.category-manager-layout { display: flex; flex-direction: column; gap: 14px; }
+.btn-ios-add { background: var(--ios-blue); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+.category-list { background: var(--ios-card-bg); border-radius: 10px; border: 1px solid var(--ios-border); overflow: hidden; }
+.category-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--ios-border); }
 .category-item:last-child { border-bottom: none; }
-.btn-cat-edit { background: none; border: 1px solid var(--google-border); padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; color: var(--text-secondary); }
-.btn-cat-edit:hover { border-color: var(--google-blue); color: var(--google-blue); }
+.btn-cat-edit { background: none; border: none; color: var(--ios-blue); font-size: 14px; cursor: pointer; }
 
+/* Modales estilo Alerta iOS */
 .backdrop-modal {
     display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(32,33,36,0.4); justify-content: center; align-items: center; padding: 15px; box-sizing: border-box;
+    background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; padding: 16px; box-sizing: border-box;
 }
-.modal-body { background-color: white; padding: 24px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); box-sizing: border-box; }
-.modal-buttons-layout { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
-.btn-dismiss { background: none; border: 1px solid var(--google-border); color: var(--text-secondary); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; }
-.btn-commit { background: var(--google-blue); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; }
+.modal-body { 
+    background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    padding: 20px; border-radius: 14px; width: 100%; max-width: 340px; box-shadow: 0 4px 24px rgba(0,0,0,0.15); box-sizing: border-box; 
+}
+.modal-buttons-layout { display: flex; gap: 0; margin-top: 20px; border-top: 0.5px solid #3c3c434d; margin-left: -20px; margin-right: -20px; margin-bottom: -20px; }
+.btn-ios-cancel, .btn-ios-save { 
+    flex: 1; background: none; border: none; padding: 12px; font-size: 17px; cursor: pointer; text-align: center;
+}
+.btn-ios-cancel { color: var(--ios-red); border-right: 0.5px solid #3c3c434d; }
+.btn-ios-save { color: var(--ios-blue); font-weight: 600; }
 
-.banner-alert { margin-top: 12px; font-size: 13px; padding: 10px 14px; border-radius: 4px; display: none; border: 1px solid transparent; }
+.banner-alert { margin-top: 12px; font-size: 13px; padding: 10px; border-radius: 8px; display: none; text-align: center; }
 .alert-success { background-color: var(--success-bg); color: var(--success-green); }
-.alert-error { background-color: var(--danger-bg); color: var(--danger-red); }
-.label-loading { text-align: center; color: var(--text-secondary); font-style: italic; padding: 16px; font-size: 13px; }
+.alert-error { background-color: var(--danger-bg); color: var(--ios-red); }
+.label-loading { text-align: center; color: var(--ios-secondary-text); font-style: italic; padding: 16px; }
