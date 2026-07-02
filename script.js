@@ -237,6 +237,7 @@ document.getElementById('formEdit').addEventListener('submit', function(e) {
     .finally(() => btn.disabled = false);
 });
 
+
 window.onload = cargarDatosBase;
 
 
