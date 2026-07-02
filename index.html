@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Almacén Central - Control de Inventario</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="header-bar">
+    <h1>Control de Almacén</h1>
+</div>
+
+<div class="main-container">
+    <div class="navigation-tabs">
+        <button class="tab-link active-tab" onclick="changeTab('registro')">Registrar Prenda</button>
+        <button class="tab-link" onclick="changeTab('stock')">Control de Stock</button>
+        <button class="tab-link" onclick="changeTab('config-cat')">Categorías</button>
+    </div>
+
+    <!-- TAB 1: REGISTRO -->
+    <div id="panel-registro" class="panel-content active-panel">
+        <h3>Ingresar Nueva Prenda</h3>
+        <form id="formNuevo">
+            <div class="input-group">
+                <label for="nombre">Nombre o Modelo del Producto</label>
+                <input type="text" id="nombre" required placeholder="Ej: Casaca Jean Stonewash">
+            </div>
+            <div class="input-group">
+                <label for="categoria">Categoría</label>
+                <select id="categoria" required>
+                    <!-- Se llena dinámicamente -->
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Fotografía de Referencia</label>
+                <div class="upload-options">
+                    <label for="fileInput" class="btn-upload-trigger">📁 Galería</label>
+                    <input type="file" id="fileInput" accept="image/*">
+                    <label for="cameraInput" class="btn-upload-trigger">📷 Cámara</label>
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment">
+                </div>
+                <img id="imagePreview" class="preview-box-img" alt="Vista previa">
+                <input type="hidden" id="imageData" required>
+                <input type="hidden" id="imageType"><input type="hidden" id="imageName">
+            </div>
+            <div class="input-group">
+                <label>Cantidades Iniciales por Talla</label>
+                <div class="grid-tallas">
+                    <div class="box-talla"><label for="tallaS">S</label><input type="number" id="tallaS" min="0" value="0" required></div>
+                    <div class="box-talla"><label for="tallaM">M</label><input type="number" id="tallaM" min="0" value="0" required></div>
+                    <div class="box-talla"><label for="tallaL">L</label><input type="number" id="tallaL" min="0" value="0" required></div>
+                    <div class="box-talla"><label for="tallaXL">XL</label><input type="number" id="tallaXL" min="0" value="0" required></div>
+                </div>
+            </div>
+            <button type="submit" id="btnSubmit" class="btn-action-primary">Registrar en Inventario</button>
+            <div id="mensaje" class="banner-alert"></div>
+        </form>
+    </div>
+
+    <!-- TAB 2: CONSULTA Y CONTROL -->
+    <div id="panel-stock" class="panel-content">
+        <div class="stock-tools">
+            <input type="text" id="searchBar" class="search-input" placeholder="Buscar prenda por nombre..." oninput="ejecutarBusquedaCombinada()">
+            <select id="filterCategoria" class="filter-select" onchange="ejecutarBusquedaCombinada()">
+                <!-- Se llena dinámicamente -->
+            </select>
+            <button class="btn-sync" onclick="cargarDatosBase()">🔄 Sincronizar</button>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th class="cell-left">Prenda</th>
+                        <th>S</th><th>M</th><th>L</th><th>XL</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaStockBody"></tbody>
+            </table>
+            <div id="stockLoadingLabel" class="label-loading" style="display: none;">Conectando con la base de datos...</div>
+        </div>
+    </div>
+
+    <!-- TAB 3: GESTIÓN DE CATEGORÍAS -->
+    <div id="panel-config-cat" class="panel-content">
+        <h3>Gestionar Categorías del Catálogo</h3>
+        <div class="category-manager-layout">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="newCatInput" placeholder="Nombre de nueva categoría (ej: Chaleco)">
+                <button type="button" class="btn-commit" style="white-space:nowrap;" onclick="agregarNuevaCategoriaServidor()">+ Agregar</button>
+            </div>
+            <div class="category-list" id="listaCategoriasContenedor">
+                <!-- Listado dinámico -->
+            </div>
+        </div>
+        <div id="catMensaje" class="banner-alert"></div>
+    </div>
+</div>
+
+<!-- MODAL EDICIÓN PRENDA -->
+<div id="editModal" class="backdrop-modal">
+    <div class="modal-body">
+        <h3>Modificar Producto</h3>
+        <form id="formEdit">
+            <input type="hidden" id="editRowNum">
+            <div class="input-group">
+                <label for="editNombre">Nombre del Producto</label>
+                <input type="text" id="editNombre" required>
+            </div>
+            <div class="input-group">
+                <label for="editCategoria">Categoría</label>
+                <select id="editCategoria" required></select>
+            </div>
+            <div class="input-group">
+                <label>Actualizar Foto (Opcional - Blanco para mantener la actual)</label>
+                <div class="upload-options">
+                    <label for="editFileInput" class="btn-upload-trigger">📁 Galería</label>
+                    <input type="file" id="editFileInput" accept="image/*">
+                    <label for="editCameraInput" class="btn-upload-trigger">📷 Cámara</label>
+                    <input type="file" id="editCameraInput" accept="image/*" capture="environment">
+                </div>
+                <img id="editImagePreview" class="preview-box-img" alt="Nueva foto">
+                <input type="hidden" id="editImageData">
+                <input type="hidden" id="editImageType"><input type="hidden" id="editImageName">
+            </div>
+            <div class="input-group">
+                <label>Existencias en Almacén</label>
+                <div class="grid-tallas">
+                    <div class="box-talla"><label for="editTallaS">S</label><input type="number" id="editTallaS" min="0" required></div>
+                    <div class="box-talla"><label for="editTallaM">M</label><input type="number" id="editTallaM" min="0" required></div>
+                    <div class="box-talla"><label for="editTallaL">L</label><input type="number" id="editTallaL" min="0" required></div>
+                    <div class="box-talla"><label for="editTallaXL">XL</label><input type="number" id="editTallaXL" min="0" required></div>
+                </div>
+            </div>
+            <div class="modal-buttons-layout">
+                <button type="button" class="btn-dismiss" onclick="closeModal()">Cancelar</button>
+                <button type="submit" id="btnSaveEdit" class="btn-commit">Guardar Cambios</button>
+            </div>
+            <div id="editMensaje" class="banner-alert"></div>
+        </form>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
