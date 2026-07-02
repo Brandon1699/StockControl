@@ -6,7 +6,7 @@ function convertirImagenMiniatura(url) {
     if (!url) return '';
     if (url.includes('thumbnail?id=')) return url;
     const matches = url.match(/[-\w]{25,}/);
-    return matches ? `https://drive.google.com/thumbnail?id=${matches[0]}&sz=w100` : url;
+    return matches ? `https://drive.google.com/thumbnail?id=${matches[0]}&sz=100` : url;
 }
 
 function changeTab(tabId) {
@@ -14,14 +14,14 @@ function changeTab(tabId) {
     document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active-panel'));
     
     if(tabId === 'registro') {
-        document.querySelector('.navigation-tabs button:nth-child(1)').classList.add('active-tab');
+        document.querySelector('.segmented-control button:nth-child(1)').classList.add('active-tab');
         document.getElementById('panel-registro').classList.add('active-panel');
     } else if(tabId === 'stock') {
-        document.querySelector('.navigation-tabs button:nth-child(2)').classList.add('active-tab');
+        document.querySelector('.segmented-control button:nth-child(2)').classList.add('active-tab');
         document.getElementById('panel-stock').classList.add('active-panel');
         cargarDatosBase();
     } else {
-        document.querySelector('.navigation-tabs button:nth-child(3)').classList.add('active-tab');
+        document.querySelector('.segmented-control button:nth-child(3)').classList.add('active-tab');
         document.getElementById('panel-config-cat').classList.add('active-panel');
         cargarDatosBase();
     }
@@ -75,7 +75,7 @@ function actualizarDropdownsCategorias() {
 
     selectReg.innerHTML = cacheCategorias.map(c => `<option value="${c}">${c}</option>`).join('');
     selectEdit.innerHTML = cacheCategorias.map(c => `<option value="${c}">${c}</option>`).join('');
-    selectFilter.innerHTML = '<option value="">Todas las Categorías</option>' + cacheCategorias.map(c => `<option value="${c}">${c}</option>`).join('');
+    selectFilter.innerHTML = '<option value="">Todas</option>' + cacheCategorias.map(c => `<option value="${c}">${c}</option>`).join('');
     
     if(valReg) selectReg.value = valReg;
     if(valEdit) selectEdit.value = valEdit;
@@ -84,7 +84,7 @@ function actualizarDropdownsCategorias() {
 
 function dibujarTablaStock(lista) {
     const tbody = document.getElementById('tablaStockBody'); tbody.innerHTML = '';
-    if(lista.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-secondary);">No hay coincidencias en este filtro.</td></tr>'; return; }
+    if(lista.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--ios-secondary-text);">Sin coincidencias.</td></tr>'; return; }
 
     lista.forEach(prod => {
         const tr = document.createElement('tr');
@@ -92,8 +92,8 @@ function dibujarTablaStock(lista) {
         const indexOrig = cachePrendas.findIndex(item => item.rowNumber === prod.rowNumber);
         
         tr.innerHTML = `
-            <td><a href="${prod.imagen}" target="_blank"><img class="img-table-thumb" src="${convertirImagenMiniatura(prod.imagen)}" onerror="this.src='https://placehold.co/38x38?text=Foto'"></a></td>
-            <td class="cell-left" style="font-weight:500;">${prod.nombre}<br><span style="font-size:11px; color:var(--text-secondary); font-weight:normal;">${prod.categoria || 'Sin categoría'}</span></td>
+            <td><a href="${prod.imagen}" target="_blank"><img class="img-table-thumb" src="${convertirImagenMiniatura(prod.imagen)}" onerror="this.src='https://placehold.co/36x36?text=Foto'"></a></td>
+            <td class="cell-left" style="font-weight:600; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${prod.nombre}<br><span style="font-size:11px; color:var(--ios-secondary-text); font-weight:normal;">${prod.categoria || 'S/C'}</span></td>
             <td class="${cS(prod.tallaS)}">${prod.tallaS}</td>
             <td class="${cS(prod.tallaM)}">${prod.tallaM}</td>
             <td class="${cS(prod.tallaL)}">${prod.tallaL}</td>
@@ -121,7 +121,7 @@ function dibujarListaConfigCategorias() {
     contenedor.innerHTML = cacheCategorias.map(cat => `
         <div class="category-item">
             <span><strong>${cat}</strong></span>
-            <button class="btn-cat-edit" onclick="editarCategoriaMadre('${cat}')">Editar Nombre</button>
+            <button class="btn-cat-edit" onclick="editarCategoriaMadre('${cat}')">Editar</button>
         </div>
     `).join('');
 }
@@ -135,11 +135,11 @@ function agregarNuevaCategoriaServidor() {
 }
 
 function editarCategoriaMadre(oldCat) {
-    const nuevoNombre = prompt(`Cambiar el nombre de la categoría "${oldCat}" por:`, oldCat);
+    const nuevoNombre = prompt(`Cambiar nombre de "${oldCat}" por:`, oldCat);
     if (!nuevoNombre || nuevoNombre.trim() === "" || nuevoNombre.trim() === oldCat) return;
 
     const msg = document.getElementById('catMensaje');
-    msg.textContent = "Actualizando catálogo y prendas vinculadas..."; msg.className = "banner-alert alert-success"; msg.style.display = "block";
+    msg.textContent = "Sincronizando categorías..."; msg.className = "banner-alert alert-success"; msg.style.display = "block";
 
     fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "editar_categoria", oldCategoria: oldCat, newCategoria: nuevoNombre.trim() }) })
     .then(res => res.json())
@@ -168,7 +168,7 @@ document.getElementById('formNuevo').addEventListener('submit', function(e) {
 
     fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(datos) })
     .then(() => {
-        msg.textContent = "Prenda guardada exitosamente."; msg.className = "banner-alert alert-success"; msg.style.display = "block";
+        msg.textContent = "Guardado con éxito."; msg.className = "banner-alert alert-success"; msg.style.display = "block";
         document.getElementById('formNuevo').reset(); document.getElementById('imagePreview').style.display = 'none';
         ['tallaS', 'tallaM', 'tallaL', 'tallaXL'].forEach(id => document.getElementById(id).value = 0);
     })
@@ -178,7 +178,6 @@ document.getElementById('formNuevo').addEventListener('submit', function(e) {
 function launchEditModal(index) {
     const prenda = cachePrendas[index];
     document.getElementById('editMensaje').style.display = 'none';
-    
     document.getElementById('editRowNum').value = prenda.rowNumber;
     document.getElementById('editNombre').value = prenda.nombre;
     
@@ -225,12 +224,12 @@ document.getElementById('formEdit').addEventListener('submit', function(e) {
     .then(res => res.json())
     .then(res => {
         if (res.status === "éxito") {
-            msg.textContent = "Cambios guardados con éxito."; msg.className = "banner-alert alert-success"; msg.style.display = "block";
+            msg.textContent = "Cambios guardados."; msg.className = "banner-alert alert-success"; msg.style.display = "block";
             setTimeout(() => { closeModal(); cargarDatosBase(); }, 1200);
         } else { throw new Error(res.mensaje); }
     })
     .catch(() => {
-        msg.textContent = "Error al guardar modificaciones."; msg.className = "banner-alert alert-error"; msg.style.display = "block";
+        msg.textContent = "Error al guardar."; msg.className = "banner-alert alert-error"; msg.style.display = "block";
     })
     .finally(() => btn.disabled = false);
 });
