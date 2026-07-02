@@ -93,7 +93,10 @@ function dibujarTablaStock(lista) {
         
         tr.innerHTML = `
             <td><a href="${prod.imagen}" target="_blank"><img class="img-table-thumb" src="${convertirImagenMiniatura(prod.imagen)}" onerror="this.src='https://placehold.co/36x36?text=Foto'"></a></td>
-            <td class="cell-left" style="font-weight:600; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${prod.nombre}<br><span style="font-size:11px; color:var(--ios-secondary-text); font-weight:normal;">${prod.categoria || 'S/C'}</span></td>
+            <td class="cell-left">
+                <span class="cell-prenda-text">${prod.nombre}</span>
+                <span class="cell-prenda-cat">${prod.categoria || 'S/C'}</span>
+            </td>
             <td class="${cS(prod.tallaS)}">${prod.tallaS}</td>
             <td class="${cS(prod.tallaM)}">${prod.tallaM}</td>
             <td class="${cS(prod.tallaL)}">${prod.tallaL}</td>
@@ -235,5 +238,3 @@ document.getElementById('formEdit').addEventListener('submit', function(e) {
 });
 
 window.onload = cargarDatosBase;
-
-
