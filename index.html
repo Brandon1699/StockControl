@@ -53,10 +53,26 @@
             <div class="ios-card">
                 <label style="margin-bottom: 12px;">Cantidades Iniciales</label>
                 <div class="grid-tallas">
-                    <div class="box-talla"><label for="tallaS">S</label><input type="number" id="tallaS" min="0" value="0" required></div>
-                    <div class="box-talla"><label for="tallaM">M</label><input type="number" id="tallaM" min="0" value="0" required></div>
-                    <div class="box-talla"><label for="tallaL">L</label><input type="number" id="tallaL" min="0" value="0" required></div>
-                    <div class="box-talla"><label for="tallaXL">XL</label><input type="number" id="tallaXL" min="0" value="0" required></div>
+                    <div class="box-talla">
+                        <label for="tallaS">S</label>
+                        <input type="number" id="tallaS" min="0" value="0" required>
+                        <button type="button" class="btn-talla-color" onclick="abrirModalColores('registro', 'S')">🎨 Colores</button>
+                    </div>
+                    <div class="box-talla">
+                        <label for="tallaM">M</label>
+                        <input type="number" id="tallaM" min="0" value="0" required>
+                        <button type="button" class="btn-talla-color" onclick="abrirModalColores('registro', 'M')">🎨 Colores</button>
+                    </div>
+                    <div class="box-talla">
+                        <label for="tallaL">L</label>
+                        <input type="number" id="tallaL" min="0" value="0" required>
+                        <button type="button" class="btn-talla-color" onclick="abrirModalColores('registro', 'L')">🎨 Colores</button>
+                    </div>
+                    <div class="box-talla">
+                        <label for="tallaXL">XL</label>
+                        <input type="number" id="tallaXL" min="0" value="0" required>
+                        <button type="button" class="btn-talla-color" onclick="abrirModalColores('registro', 'XL')">🎨 Colores</button>
+                    </div>
                 </div>
             </div>
 
@@ -129,10 +145,26 @@
             <div class="input-group">
                 <label>Existencias</label>
                 <div class="grid-tallas">
-                    <div class="box-talla"><label for="editTallaS">S</label><input type="number" id="editTallaS" min="0" required></div>
-                    <div class="box-talla"><label for="editTallaM">M</label><input type="number" id="editTallaM" min="0" required></div>
-                    <div class="box-talla"><label for="editTallaL">L</label><input type="number" id="editTallaL" min="0" required></div>
-                    <div class="box-talla"><label for="editTallaXL">XL</label><input type="number" id="editTallaXL" min="0" required></div>
+                    <div class="box-talla">
+                        <label for="editTallaS">S</label>
+                        <input type="number" id="editTallaS" min="0" required>
+                        <button type="button" class="btn-talla-color" onclick="abrirModalColores('editar', 'S')">🎨 Colores</button>
+                    </div>
+                    <div class="box-talla">
+                        <label for="editTallaM">M</label>
+                        <input type="number" id="editTallaM" min="0" required>
+                        <button type="button" class="btn-talla-color" onclick="abrirModalColores('editar', 'M')">🎨 Colores</button>
+                    </div>
+                    <div class="box-talla">
+                        <label for="editTallaL">L</label>
+                        <input type="number" id="editTallaL" min="0" required>
+                        <button type="button" class="btn-talla-color" onclick="abrirModalColores('editar', 'L')">🎨 Colores</button>
+                    </div>
+                    <div class="box-talla">
+                        <label for="editTallaXL">XL</label>
+                        <input type="number" id="editTallaXL" min="0" required>
+                        <button type="button" class="btn-talla-color" onclick="abrirModalColores('editar', 'XL')">🎨 Colores</button>
+                    </div>
                 </div>
             </div>
             <div class="modal-buttons-layout">
@@ -141,6 +173,31 @@
             </div>
             <div id="editMensaje" class="banner-alert"></div>
         </form>
+    </div>
+</div>
+
+<div id="colorModal" class="backdrop-modal" style="z-index: 3000;">
+    <div class="modal-body" style="max-width: 350px;">
+        <h3 id="colorModalTitle" style="text-align: center; margin-bottom: 12px;">Desglose de Colores</h3>
+        <div id="colorInputsContainer" style="max-height: 250px; overflow-y: auto; margin-bottom: 12px;">
+            </div>
+        <button type="button" class="btn-ios-secondary" style="padding: 8px; font-size: 13px; margin-bottom: 14px;" onclick="agregarFilaColorBlanco()">+ Agregar otro color</button>
+        <div class="modal-buttons-layout">
+            <button type="button" class="btn-ios-cancel" onclick="cerrarModalColores()">Cerrar</button>
+            <button type="button" class="btn-ios-save" onclick="guardarModalColores()">Aplicar</button>
+        </div>
+    </div>
+</div>
+
+<div id="detailModal" class="backdrop-modal">
+    <div class="modal-body" style="max-width: 330px; text-align: center;">
+        <h3 id="detailTitle" style="margin-bottom: 4px;">Nombre de Prenda</h3>
+        <p id="detailCategory" style="font-size: 13px; color: var(--ios-secondary-text); margin: 0 0 16px 0;">Categoría</p>
+        <div id="detailContentContainer" style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 16px;">
+            </div>
+        <div class="modal-buttons-layout" style="border-top: 0.5px solid #3c3c434d;">
+            <button type="button" class="btn-ios-save" style="width: 100%; text-align: center;" onclick="cerrarModalDetalle()">Listo</button>
+        </div>
     </div>
 </div>
 
