@@ -29,7 +29,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Control Segmentado Estilo Nativo iOS */
 .segmented-control {
     display: flex;
     background: #e3e3e8;
@@ -38,40 +37,17 @@ body {
     margin-bottom: 20px;
 }
 .tab-link {
-    flex: 1;
-    padding: 7px 2px;
-    text-align: center;
-    background: none;
-    border: none;
-    font-size: 13px;
-    font-weight: 500;
-    color: #1c1c1e;
-    cursor: pointer;
-    border-radius: 7px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    transition: all 0.1s ease;
+    flex: 1; padding: 7px 2px; text-align: center; background: none; border: none;
+    font-size: 13px; font-weight: 500; color: #1c1c1e; cursor: pointer; border-radius: 7px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.1s ease;
 }
-.tab-link svg {
-    width: 18px;
-    height: 18px;
-    fill: currentColor;
-}
+.tab-link svg { width: 18px; height: 18px; fill: currentColor; }
 .tab-link.active-tab {
-    background: #ffffff;
-    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.12), 0px 3px 1px rgba(0, 0, 0, 0.04);
-    font-weight: 600;
+    background: #ffffff; box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.12), 0px 3px 1px rgba(0, 0, 0, 0.04); font-weight: 600;
 }
 
-/* Tarjetas Agrupadas de iOS */
 .ios-card {
-    background: var(--ios-card-bg);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+    background: var(--ios-card-bg); border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .panel-content { display: none; }
@@ -79,109 +55,71 @@ body {
 
 h3 { font-size: 17px; font-weight: 600; margin: 0 0 16px 0; }
 .input-group { margin-bottom: 14px; }
-.input-group:last-child { margin-bottom: 0; }
 label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 400; color: #3a3a3c; }
 
-/* Inputs */
 input[type="text"], input[type="number"], select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--ios-border);
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 16px;
-    background: #fafafa;
-    font-family: inherit;
+    width: 100%; padding: 12px; border: 1px solid var(--ios-border); border-radius: 8px;
+    box-sizing: border-box; font-size: 16px; background: #fafafa; font-family: inherit;
 }
 input[type="text"]:focus, input[type="number"]:focus, select:focus {
-    outline: none;
-    border-color: var(--ios-blue);
-    background: #ffffff;
+    outline: none; border-color: var(--ios-blue); background: #ffffff;
 }
 
-.grid-tallas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.box-talla input { text-align: center; padding: 10px 4px; }
+.grid-tallas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.box-talla { text-align: center; display: flex; flex-direction: column; gap: 6px; }
+.box-talla input { text-align: center; padding: 8px 4px; font-size: 15px; }
 
-/* Botones */
+/* Pequeño botón de color bajo la talla */
+.btn-talla-color {
+    background: var(--ios-gray-button); color: #48484a; border: none;
+    padding: 5px 2px; border-radius: 5px; font-size: 11px; font-weight: 500; cursor: pointer;
+}
+
 .upload-options { display: flex; gap: 10px; }
 .btn-ios-secondary {
     flex: 1; background: var(--ios-gray-button); color: var(--ios-blue);
-    padding: 12px; border-radius: 8px; cursor: pointer; text-align: center;
-    font-size: 15px; font-weight: 500; display: block;
+    padding: 12px; border-radius: 8px; cursor: pointer; text-align: center; font-size: 15px; font-weight: 500; display: block;
 }
-.btn-ios-secondary:active, .btn-ios-primary:active, .btn-ios-add:active {
-    opacity: 0.6;
-}
-input[type="file"] { display: none; }
+.btn-ios-secondary:active, .btn-ios-primary:active, .btn-ios-add:active { opacity: 0.6; }
 .preview-box-img { width: 100%; max-height: 140px; object-fit: contain; border-radius: 8px; display: none; margin-top: 12px; border: 1px solid var(--ios-border); }
 
 button.btn-ios-primary {
-    width: 100%; background-color: var(--ios-blue); color: white; border: none;
-    padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer;
-    margin-top: 10px;
+    width: 100%; background-color: var(--ios-blue); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
 }
 button.btn-ios-primary:disabled { background-color: #d1d1d6; color: #aeaeae; }
 
-/* Controles de barra de Stock */
 .stock-tools { display: flex; gap: 6px; margin-bottom: 14px; }
 .search-input { flex: 1.8; padding: 10px; font-size: 15px; }
 .filter-select { flex: 1.2; padding: 10px; font-size: 14px; }
 .btn-sync-ios { background: var(--ios-gray-button); border: none; padding: 0 10px; border-radius: 8px; font-size: 16px; cursor: pointer; }
 
-/* TABLA ULTRA OPTIMIZADA PARA IPHONE (PREVIENE DESBORDAMIENTO) */
-.table-container { 
-    background: var(--ios-card-bg); border-radius: 10px; overflow: hidden; 
-    box-shadow: 0px 1px 2px rgba(0,0,0,0.05); width: 100%;
-}
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    font-size: 13px; 
-    table-layout: fixed; /* Fuerza a respetar los anchos asignados abajo */
-}
-th, td { 
-    padding: 12px 2px; 
-    border-bottom: 1px solid var(--ios-border); 
-    text-align: center; 
-    vertical-align: middle;
-}
+.table-container { background: var(--ios-card-bg); border-radius: 10px; overflow: hidden; box-shadow: 0px 1px 2px rgba(0,0,0,0.05); width: 100%; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+th, td { padding: 12px 2px; border-bottom: 1px solid var(--ios-border); text-align: center; vertical-align: middle; }
 th { background-color: #f8f9fa; font-weight: 600; color: var(--ios-secondary-text); font-size: 11px; text-transform: uppercase; }
 
-/* Definición milimétrica de anchos por columna en el espacio de un iPhone */
-table th:nth-child(1), table td:nth-child(1) { width: 42px; }  /* Foto */
-table th:nth-child(2), table td:nth-child(2) { width: auto; }  /* Prenda (Se adapta dinámicamente) */
+/* Estilo para hacer que la fila parezca un elemento de lista presionable */
+tbody tr { cursor: pointer; }
+tbody tr:active td { background-color: #e5e5ea; }
+
+table th:nth-child(1), table td:nth-child(1) { width: 42px; }
+table th:nth-child(2), table td:nth-child(2) { width: auto; }
 table th:nth-child(3), table td:nth-child(3),
 table th:nth-child(4), table td:nth-child(4),
 table th:nth-child(5), table td:nth-child(5),
-table th:nth-child(6), table td:nth-child(6) { width: 28px; }  /* S, M, L, XL */
-table th:nth-child(7), table td:nth-child(7) { width: 45px; }  /* Editar */
+table th:nth-child(6), table td:nth-child(6) { width: 28px; }
+table th:nth-child(7), table td:nth-child(7) { width: 45px; }
 
 .cell-left { text-align: left; }
 .img-table-thumb { width: 34px; height: 34px; object-fit: cover; border-radius: 6px; border: 1px solid var(--ios-border); display: block; margin: 0 auto; }
 
-/* Truncado estricto del texto largo */
-.cell-prenda-text {
-    font-weight: 600;
-    color: var(--ios-text);
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; /* Recorta y añade '...' */
-}
-.cell-prenda-cat {
-    font-size: 11px; 
-    color: var(--ios-secondary-text); 
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+.cell-prenda-text { font-weight: 600; color: var(--ios-text); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cell-prenda-cat { font-size: 11px; color: var(--ios-secondary-text); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .badge-zero { color: var(--ios-red); font-weight: 600; }
 .badge-active { color: var(--ios-text); font-weight: 400; }
 .btn-row-edit { background: none; border: none; color: var(--ios-blue); cursor: pointer; font-size: 13px; font-weight: 500; padding: 4px 0; }
 
-/* Vista de Categorías */
 .category-manager-layout { display: flex; flex-direction: column; gap: 14px; }
 .btn-ios-add { background: var(--ios-blue); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; }
 .category-list { background: var(--ios-card-bg); border-radius: 10px; border: 1px solid var(--ios-border); overflow: hidden; }
@@ -191,19 +129,27 @@ table th:nth-child(7), table td:nth-child(7) { width: 45px; }  /* Editar */
 
 /* Modales */
 .backdrop-modal {
-    display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; padding: 16px; box-sizing: border-box;
+    display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; padding: 16px; box-sizing: border-box;
 }
 .modal-body { 
-    background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    padding: 20px; border-radius: 14px; width: 100%; max-width: 320px; box-shadow: 0 4px 24px rgba(0,0,0,0.15); box-sizing: border-box; 
+    background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 20px; border-radius: 14px; width: 100%; max-width: 320px; box-shadow: 0 4px 24px rgba(0,0,0,0.15); box-sizing: border-box; 
 }
 .modal-buttons-layout { display: flex; gap: 0; margin-top: 20px; border-top: 0.5px solid #3c3c434d; margin-left: -20px; margin-right: -20px; margin-bottom: -20px; }
-.btn-ios-cancel, .btn-ios-save { 
-    flex: 1; background: none; border: none; padding: 12px; font-size: 17px; cursor: pointer; text-align: center;
-}
+.btn-ios-cancel, .btn-ios-save { flex: 1; background: none; border: none; padding: 12px; font-size: 17px; cursor: pointer; text-align: center; }
 .btn-ios-cancel { color: var(--ios-red); border-right: 0.5px solid #3c3c434d; }
 .btn-ios-save { color: var(--ios-blue); font-weight: 600; }
+
+/* Estilos de filas de color dinámicas */
+.color-input-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+.color-input-row input[type="text"] { flex: 2; padding: 8px; font-size: 14px; }
+.color-input-row input[type="number"] { flex: 1; padding: 8px; font-size: 14px; text-align: center; }
+.btn-remove-color { background: none; border: none; color: var(--ios-red); font-size: 18px; cursor: pointer; padding: 0 4px; }
+
+/* Bloques de desglose en el resumen */
+.detail-size-section { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 0.5px solid var(--ios-border); }
+.detail-size-section:last-child { margin-bottom: 0; border-bottom: none; }
+.detail-size-title { font-weight: 600; font-size: 14px; color: var(--ios-blue); margin-bottom: 4px; }
+.detail-color-line { display: flex; justify-content: space-between; font-size: 13px; padding: 2px 0; color: #1c1c1e; }
 
 .banner-alert { margin-top: 12px; font-size: 13px; padding: 10px; border-radius: 8px; display: none; text-align: center; }
 .alert-success { background-color: var(--success-bg); color: var(--success-green); }
