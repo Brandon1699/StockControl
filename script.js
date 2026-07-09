@@ -2,6 +2,14 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3KzszjN0pP2NV
 let cachePrendas = [];
 let cacheCategorias = [];
 
+// OBJETOS GLOBALES PARA CONTROL DE COLORES OPCIONALES
+let coloresRegistro = { S: {}, M: {}, L: {}, XL: {} };
+let coloresEdicion = { S: {}, M: {}, L: {}, XL: {} };
+let poolColoresPrenda = []; // Guarda los colores que se van usando en LA PRENDA ACTUAL para compartirlos entre tallas
+
+let currentContexto = 'registro'; // 'registro' o 'editar'
+let currentTalla = 'S';          // 'S', 'M', 'L', 'XL'
+
 function convertirImagenMiniatura(url) {
     if (!url) return '';
     if (url.includes('thumbnail?id=')) return url;
@@ -57,7 +65,6 @@ function cargarDatosBase() {
         if (res.status === "éxito") {
             cachePrendas = res.datos;
             cacheCategorias = res.categorias;
-            
             actualizarDropdownsCategorias();
             dibujarTablaStock(cachePrendas);
             dibujarListaConfigCategorias();
@@ -70,7 +77,6 @@ function actualizarDropdownsCategorias() {
     const selectReg = document.getElementById('categoria');
     const selectEdit = document.getElementById('editCategoria');
     const selectFilter = document.getElementById('filterCategoria');
-    
     const valReg = selectReg.value; const valEdit = selectEdit.value; const valFilter = selectFilter.value;
 
     selectReg.innerHTML = cacheCategorias.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -84,15 +90,18 @@ function actualizarDropdownsCategorias() {
 
 function dibujarTablaStock(lista) {
     const tbody = document.getElementById('tablaStockBody'); tbody.innerHTML = '';
-    if(lista.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--ios-secondary-text);">Sin coincidencias.</td></tr>'; return; }
+    if(lista.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--ios-secondary-text);">Sin de existencias.</td></tr>'; return; }
 
     lista.forEach(prod => {
         const tr = document.createElement('tr');
         const cS = (v) => v == 0 ? 'badge-zero' : 'badge-active';
         const indexOrig = cachePrendas.findIndex(item => item.rowNumber === prod.rowNumber);
         
+        // Al hacer click en cualquier celda de la fila se abre el Detalle, EXCEPTO si presionan el botón de Editar
+        tr.onclick = function() { verResumenPrenda(indexOrig); };
+
         tr.innerHTML = `
-            <td><a href="${prod.imagen}" target="_blank"><img class="img-table-thumb" src="${convertirImagenMiniatura(prod.imagen)}" onerror="this.src='https://placehold.co/36x36?text=Foto'"></a></td>
+            <td><img class="img-table-thumb" src="${convertirImagenMiniatura(prod.imagen)}" onerror="this.src='https://placehold.co/36x36?text=Foto'"></td>
             <td class="cell-left">
                 <span class="cell-prenda-text">${prod.nombre}</span>
                 <span class="cell-prenda-cat">${prod.categoria || 'S/C'}</span>
@@ -101,16 +110,155 @@ function dibujarTablaStock(lista) {
             <td class="${cS(prod.tallaM)}">${prod.tallaM}</td>
             <td class="${cS(prod.tallaL)}">${prod.tallaL}</td>
             <td class="${cS(prod.tallaXL)}">${prod.tallaXL}</td>
-            <td><button class="btn-row-edit" onclick="launchEditModal(${indexOrig})">Editar</button></td>
+            <td><button class="btn-row-edit" onclick="event.stopPropagation(); launchEditModal(${indexOrig})">Editar</button></td>
         `;
         tbody.appendChild(tr);
     });
 }
 
+// NUEVA FUNCIÓN: ABRE EL MODAL DE DESGLOSE DE COLORES
+function abrirModalColores(contexto, talla) {
+    currentContexto = contexto;
+    currentTalla = talla;
+    
+    document.getElementById('colorModalTitle').textContent = `Colores Talla ${talla}`;
+    const contenedor = document.getElementById('colorInputsContainer');
+    contenedor.innerHTML = '';
+
+    const dictColores = contexto === 'registro' ? coloresRegistro[talla] : coloresEdicion[talla];
+
+    // Combinar los colores que ya tiene guardados esta talla con los colores que se usaron en otras tallas de esta misma prenda
+    let todosLosColores = [...new Set([...poolColoresPrenda, ...Object.keys(dictColores)])];
+
+    todosLosColores.forEach(colorName => {
+        if(colorName.trim() === "") return;
+        const cantidad = dictColores[colorName] || 0;
+        insertarFilaColorEnModal(colorName, cantidad);
+    });
+
+    if(todosLosColores.length === 0) {
+        insertarFilaColorEnModal('', 0); // Fila inicial en blanco por si está vacío
+    }
+
+    document.getElementById('colorModal').style.display = 'flex';
+}
+
+function insertarFilaColorEnModal(nombre, cantidad) {
+    const contenedor = document.getElementById('colorInputsContainer');
+    const div = document.createElement('div');
+    div.className = 'color-input-row';
+    div.innerHTML = `
+        <input type="text" class="modal-color-name" placeholder="Color" value="${nombre}">
+        <input type="number" class="modal-color-qty" min="0" value="${cantidad}">
+        <button type="button" class="btn-remove-color" onclick="this.parentElement.remove()">×</button>
+    `;
+    contenedor.appendChild(div);
+}
+
+function agregarFilaColorBlanco() {
+    insertarFilaColorEnModal('', 0);
+}
+
+function cerrarModalColores() {
+    document.getElementById('colorModal').style.display = 'none';
+}
+
+// GUARDA LOS COLORES EN MEMORIA Y CALCULA EL TOTAL AUTOMÁTICAMENTE
+function guardarModalColores() {
+    const contenedor = document.getElementById('colorInputsContainer');
+    const filasName = contenedor.querySelectorAll('.modal-color-name');
+    const filasQty = contenedor.querySelectorAll('.modal-color-qty');
+
+    let nuevoDict = {};
+    let sumaTotalTalla = 0;
+
+    for (let i = 0; i < filasName.length; i++) {
+        const name = filasName[i].value.trim();
+        const qty = parseInt(filasQty[i].value) || 0;
+
+        if (name !== "" && qty > 0) {
+            nuevoDict[name] = qty;
+            sumaTotalTalla += qty;
+            
+            // Si el color no estaba en la lista de colores de la prenda, añadirlo
+            if (!poolColoresPrenda.includes(name)) {
+                poolColoresPrenda.push(name);
+            }
+        }
+    }
+
+    // Asignar al contexto correspondiente
+    if (currentContexto === 'registro') {
+        coloresRegistro[currentTalla] = nuevoDict;
+        // Colocar la suma automática en el input del formulario principal
+        document.getElementById(`talla${currentTalla}`).value = sumaTotalTalla;
+    } else {
+        coloresEdicion[currentTalla] = nuevoDict;
+        // Colocar la suma en el input del modal de edición
+        document.getElementById(`editTalla${currentTalla}`).value = sumaTotalTalla;
+    }
+
+    cerrarModalColores();
+}
+
+// NUEVA FUNCIÓN: VER EL RESUMEN DETALLADO TOCANDO LA PRENDA
+function verResumenPrenda(index) {
+    const prenda = cachePrendas[index];
+    document.getElementById('detailTitle').textContent = prenda.nombre;
+    document.getElementById('detailCategory').textContent = prenda.categoria || 'Sin Categoría';
+    
+    const contenedor = document.getElementById('detailContentContainer');
+    contenedor.innerHTML = '';
+
+    let estructuraColores;
+    try {
+        estructuraColores = JSON.parse(prenda.colores);
+    } catch(e) {
+        estructuraColores = { S: {}, M: {}, L: {}, XL: {} };
+    }
+
+    const tallasDisponibles = ['S', 'M', 'L', 'XL'];
+    let tieneDesglose = false;
+
+    tallasDisponibles.forEach(talla => {
+        const bloqueColores = estructuraColores[talla] || {};
+        const listaClaves = Object.keys(bloqueColores);
+        const stockTotalTalla = prenda[`talla${talla}`];
+
+        if(stockTotalTalla > 0) {
+            const section = document.createElement('div');
+            section.className = 'detail-size-section';
+            section.innerHTML = `<div class="detail-size-title">Talla ${talla} (Total: ${stockTotalTalla})</div>`;
+            
+            if(listaClaves.length > 0) {
+                tieneDesglose = true;
+                listaClaves.forEach(color => {
+                    const div = document.createElement('div');
+                    div.className = 'detail-color-line';
+                    div.innerHTML = `<span>🎨 ${color}</span><strong>${bloqueColores[color]} uds</strong>`;
+                    section.appendChild(div);
+                });
+            } else {
+                section.innerHTML += `<div style="font-size:12px; color:var(--ios-secondary-text); padding-left:4px;">Sin especificar colores.</div>`;
+            }
+            contenedor.appendChild(section);
+        }
+    });
+
+    if(contenedor.innerHTML === '') {
+        contenedor.innerHTML = '<p style="text-align:center; color:var(--ios-secondary-text); font-size:13px;">Esta prenda no cuenta con stock en almacén.</p>';
+    }
+
+    document.getElementById('detailModal').style.display = 'flex';
+}
+
+function cerrarModalDetalle() {
+    document.getElementById('detailModal').style.display = 'none';
+}
+
 function ejecutarBusquedaCombinada() {
     const busqueda = document.getElementById('searchBar').value.toLowerCase().trim();
     const filtroCat = document.getElementById('filterCategoria').value;
-
     const filtrados = cachePrendas.filter(prenda => {
         const coincideNombre = prenda.nombre.toLowerCase().includes(busqueda);
         const coincideCat = (filtroCat === "") || (prenda.categoria === filtroCat);
@@ -132,7 +280,6 @@ function dibujarListaConfigCategorias() {
 function agregarNuevaCategoriaServidor() {
     const input = document.getElementById('newCatInput'); const valor = input.value.trim();
     if(!valor) return;
-    
     fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "agregar_categoria", nuevaCategoria: valor }) })
     .then(() => { input.value = ''; cargarDatosBase(); });
 }
@@ -150,6 +297,7 @@ function editarCategoriaMadre(oldCat) {
     .finally(() => msg.style.display = 'none');
 }
 
+// ENVÍO DE NUEVA PRENDA (INCLUYE EL JSON EN TEXTO)
 document.getElementById('formNuevo').addEventListener('submit', function(e) {
     e.preventDefault();
     if (!document.getElementById('imageData').value) { alert('Por favor, selecciona una foto.'); return; }
@@ -160,13 +308,14 @@ document.getElementById('formNuevo').addEventListener('submit', function(e) {
         action: "registrar",
         nombre: document.getElementById('nombre').value,
         categoria: document.getElementById('categoria').value,
-        imageData: document.getElementById('imageData').value,
-        imageType: document.getElementById('imageType').value,
-        imageName: document.getElementById('imageName').value,
         tallaS: document.getElementById('tallaS').value,
         tallaM: document.getElementById('tallaM').value,
         tallaL: document.getElementById('tallaL').value,
-        tallaXL: document.getElementById('tallaXL').value
+        tallaXL: document.getElementById('tallaXL').value,
+        colores: JSON.stringify(coloresRegistro), // Texto plano listo para la celda
+        imageData: document.getElementById('imageData').value,
+        imageType: document.getElementById('imageType').value,
+        imageName: document.getElementById('imageName').value
     };
 
     fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(datos) })
@@ -174,10 +323,15 @@ document.getElementById('formNuevo').addEventListener('submit', function(e) {
         msg.textContent = "Guardado con éxito."; msg.className = "banner-alert alert-success"; msg.style.display = "block";
         document.getElementById('formNuevo').reset(); document.getElementById('imagePreview').style.display = 'none';
         ['tallaS', 'tallaM', 'tallaL', 'tallaXL'].forEach(id => document.getElementById(id).value = 0);
+        
+        // Limpiar memoria de colores del formulario
+        coloresRegistro = { S: {}, M: {}, L: {}, XL: {} };
+        poolColoresPrenda = [];
     })
     .finally(() => { btn.disabled = false; setTimeout(() => msg.style.display = 'none', 3000); });
 });
 
+// DESPLIEGUE DEL MODAL DE EDICIÓN (RECONSTRUYE LOS COLORES)
 function launchEditModal(index) {
     const prenda = cachePrendas[index];
     document.getElementById('editMensaje').style.display = 'none';
@@ -192,9 +346,25 @@ function launchEditModal(index) {
     document.getElementById('editTallaL').value = prenda.tallaL;
     document.getElementById('editTallaXL').value = prenda.tallaXL;
     
+    // Mapear los colores del Excel a la memoria temporal de edición
+    try {
+        coloresEdicion = JSON.parse(prenda.colores);
+    } catch(e) {
+        coloresEdicion = { S: {}, M: {}, L: {}, XL: {} };
+    }
+
+    // Llenar el pool del producto con todos los nombres de colores guardados
+    poolColoresPrenda = [];
+    ['S','M','L','XL'].forEach(t => {
+        if(coloresEdicion[t]) {
+            Object.keys(coloresEdicion[t]).forEach(cName => {
+                if(!poolColoresPrenda.includes(cName)) poolColoresPrenda.push(cName);
+            });
+        }
+    });
+    
     document.getElementById('editImageData').value = '';
     document.getElementById('editImagePreview').style.display = 'none';
-    
     document.getElementById('editModal').style.display = 'flex';
 }
 
@@ -213,7 +383,8 @@ document.getElementById('formEdit').addEventListener('submit', function(e) {
         tallaS: document.getElementById('editTallaS').value,
         tallaM: document.getElementById('editTallaM').value,
         tallaL: document.getElementById('editTallaL').value,
-        tallaXL: document.getElementById('editTallaXL').value
+        tallaXL: document.getElementById('editTallaXL').value,
+        colores: JSON.stringify(coloresEdicion) // Sube los colores modificados
     };
 
     const nuevaImg = document.getElementById('editImageData').value;
@@ -237,7 +408,4 @@ document.getElementById('formEdit').addEventListener('submit', function(e) {
     .finally(() => btn.disabled = false);
 });
 
-
 window.onload = cargarDatosBase;
-
-
