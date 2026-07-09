@@ -41,9 +41,10 @@
                 <label style="margin-bottom: 12px;">Fotografía</label>
                 <div class="upload-options">
                     <label for="fileInput" class="btn-ios-secondary">📁 Galería</label>
-                    <input type="file" id="fileInput" accept="image/*">
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    
                     <label for="cameraInput" class="btn-ios-secondary">📷 Cámara</label>
-                    <input type="file" id="cameraInput" accept="image/*" capture="environment">
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
                 </div>
                 <img id="imagePreview" class="preview-box-img" alt="Vista previa">
                 <input type="hidden" id="imageData" required>
@@ -134,9 +135,10 @@
                 <label>Foto de Referencia</label>
                 <div class="upload-options">
                     <label for="editFileInput" class="btn-ios-secondary">📁 Galería</label>
-                    <input type="file" id="editFileInput" accept="image/*">
+                    <input type="file" id="editFileInput" accept="image/*" style="display: none;">
+                    
                     <label for="editCameraInput" class="btn-ios-secondary">📷 Cámara</label>
-                    <input type="file" id="editCameraInput" accept="image/*" capture="environment">
+                    <input type="file" id="editCameraInput" accept="image/*" capture="environment" style="display: none;">
                 </div>
                 <img id="editImagePreview" class="preview-box-img" alt="Nueva foto">
                 <input type="hidden" id="editImageData">
@@ -179,8 +181,7 @@
 <div id="colorModal" class="backdrop-modal" style="z-index: 3000;">
     <div class="modal-body" style="max-width: 350px;">
         <h3 id="colorModalTitle" style="text-align: center; margin-bottom: 12px;">Desglose de Colores</h3>
-        <div id="colorInputsContainer" style="max-height: 250px; overflow-y: auto; margin-bottom: 12px;">
-            </div>
+        <div id="colorInputsContainer" style="max-height: 250px; overflow-y: auto; margin-bottom: 12px;"></div>
         <button type="button" class="btn-ios-secondary" style="padding: 8px; font-size: 13px; margin-bottom: 14px;" onclick="agregarFilaColorBlanco()">+ Agregar otro color</button>
         <div class="modal-buttons-layout">
             <button type="button" class="btn-ios-cancel" onclick="cerrarModalColores()">Cerrar</button>
@@ -193,8 +194,7 @@
     <div class="modal-body" style="max-width: 330px; text-align: center;">
         <h3 id="detailTitle" style="margin-bottom: 4px;">Nombre de Prenda</h3>
         <p id="detailCategory" style="font-size: 13px; color: var(--ios-secondary-text); margin: 0 0 16px 0;">Categoría</p>
-        <div id="detailContentContainer" style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 16px;">
-            </div>
+        <div id="detailContentContainer" style="text-align: left; max-height: 300px; overflow-y: auto; margin-bottom: 16px;"></div>
         <div class="modal-buttons-layout" style="border-top: 0.5px solid #3c3c434d;">
             <button type="button" class="btn-ios-save" style="width: 100%; text-align: center;" onclick="cerrarModalDetalle()">Listo</button>
         </div>
@@ -204,5 +204,3 @@
 <script src="script.js"></script>
 </body>
 </html>
-
-
