@@ -76,7 +76,7 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
     padding: 5px 2px; border-radius: 5px; font-size: 11px; font-weight: 500; cursor: pointer;
 }
 
-/* Botones de subida de fotos alineados */
+/* Botones de subida de fotos */
 .upload-options { display: flex; gap: 10px; width: 100%; box-sizing: border-box; }
 .btn-ios-secondary {
     flex: 1; background: var(--ios-gray-button); color: var(--ios-blue);
@@ -121,6 +121,26 @@ table th:nth-child(7), table td:nth-child(7) { width: 45px; }
 .badge-zero { color: var(--ios-red); font-weight: 600; }
 .badge-active { color: var(--ios-text); font-weight: 400; }
 .btn-row-edit { background: none; border: none; color: var(--ios-blue); cursor: pointer; font-size: 13px; font-weight: 500; padding: 4px 0; }
+
+/* Botón de eliminación en el Modal */
+.btn-ios-delete-main {
+    width: 100%;
+    background-color: #ffffff;
+    color: var(--ios-red);
+    border: 1px solid var(--ios-border);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+    box-sizing: border-box;
+}
+.btn-ios-delete-main:active {
+    background-color: #ffe5e5;
+}
 
 /* Categorías */
 .category-manager-layout { display: flex; flex-direction: column; gap: 14px; }
