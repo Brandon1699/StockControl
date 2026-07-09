@@ -155,5 +155,3 @@ table th:nth-child(7), table td:nth-child(7) { width: 45px; }
 .alert-success { background-color: var(--success-bg); color: var(--success-green); }
 .alert-error { background-color: var(--danger-bg); color: var(--ios-red); }
 .label-loading { text-align: center; color: var(--ios-secondary-text); font-style: italic; padding: 16px; }
-
-
