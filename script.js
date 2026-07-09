@@ -2,13 +2,12 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3KzszjN0pP2NV
 let cachePrendas = [];
 let cacheCategorias = [];
 
-// OBJETOS GLOBALES PARA CONTROL DE COLORES OPCIONALES
 let coloresRegistro = { S: {}, M: {}, L: {}, XL: {} };
 let coloresEdicion = { S: {}, M: {}, L: {}, XL: {} };
-let poolColoresPrenda = []; // Guarda los colores que se van usando en LA PRENDA ACTUAL para compartirlos entre tallas
+let poolColoresPrenda = []; 
 
-let currentContexto = 'registro'; // 'registro' o 'editar'
-let currentTalla = 'S';          // 'S', 'M', 'L', 'XL'
+let currentContexto = 'registro'; 
+let currentTalla = 'S';          
 
 function convertirImagenMiniatura(url) {
     if (!url) return '';
@@ -90,14 +89,13 @@ function actualizarDropdownsCategorias() {
 
 function dibujarTablaStock(lista) {
     const tbody = document.getElementById('tablaStockBody'); tbody.innerHTML = '';
-    if(lista.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--ios-secondary-text);">Sin de existencias.</td></tr>'; return; }
+    if(lista.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="color:var(--ios-secondary-text);">Sin coincidencias.</td></tr>'; return; }
 
     lista.forEach(prod => {
         const tr = document.createElement('tr');
         const cS = (v) => v == 0 ? 'badge-zero' : 'badge-active';
         const indexOrig = cachePrendas.findIndex(item => item.rowNumber === prod.rowNumber);
         
-        // Al hacer click en cualquier celda de la fila se abre el Detalle, EXCEPTO si presionan el botón de Editar
         tr.onclick = function() { verResumenPrenda(indexOrig); };
 
         tr.innerHTML = `
@@ -116,7 +114,6 @@ function dibujarTablaStock(lista) {
     });
 }
 
-// NUEVA FUNCIÓN: ABRE EL MODAL DE DESGLOSE DE COLORES
 function abrirModalColores(contexto, talla) {
     currentContexto = contexto;
     currentTalla = talla;
@@ -126,8 +123,6 @@ function abrirModalColores(contexto, talla) {
     contenedor.innerHTML = '';
 
     const dictColores = contexto === 'registro' ? coloresRegistro[talla] : coloresEdicion[talla];
-
-    // Combinar los colores que ya tiene guardados esta talla con los colores que se usaron en otras tallas de esta misma prenda
     let todosLosColores = [...new Set([...poolColoresPrenda, ...Object.keys(dictColores)])];
 
     todosLosColores.forEach(colorName => {
@@ -137,7 +132,7 @@ function abrirModalColores(contexto, talla) {
     });
 
     if(todosLosColores.length === 0) {
-        insertarFilaColorEnModal('', 0); // Fila inicial en blanco por si está vacío
+        insertarFilaColorEnModal('', 0); 
     }
 
     document.getElementById('colorModal').style.display = 'flex';
@@ -155,15 +150,9 @@ function insertarFilaColorEnModal(nombre, cantidad) {
     contenedor.appendChild(div);
 }
 
-function agregarFilaColorBlanco() {
-    insertarFilaColorEnModal('', 0);
-}
+function agregarFilaColorBlanco() { insertarFilaColorEnModal('', 0); }
+function cerrarModalColores() { document.getElementById('colorModal').style.display = 'none'; }
 
-function cerrarModalColores() {
-    document.getElementById('colorModal').style.display = 'none';
-}
-
-// GUARDA LOS COLORES EN MEMORIA Y CALCULA EL TOTAL AUTOMÁTICAMENTE
 function guardarModalColores() {
     const contenedor = document.getElementById('colorInputsContainer');
     const filasName = contenedor.querySelectorAll('.modal-color-name');
@@ -179,47 +168,31 @@ function guardarModalColores() {
         if (name !== "" && qty > 0) {
             nuevoDict[name] = qty;
             sumaTotalTalla += qty;
-            
-            // Si el color no estaba en la lista de colores de la prenda, añadirlo
-            if (!poolColoresPrenda.includes(name)) {
-                poolColoresPrenda.push(name);
-            }
+            if (!poolColoresPrenda.includes(name)) { poolColoresPrenda.push(name); }
         }
     }
 
-    // Asignar al contexto correspondiente
     if (currentContexto === 'registro') {
         coloresRegistro[currentTalla] = nuevoDict;
-        // Colocar la suma automática en el input del formulario principal
         document.getElementById(`talla${currentTalla}`).value = sumaTotalTalla;
     } else {
         coloresEdicion[currentTalla] = nuevoDict;
-        // Colocar la suma en el input del modal de edición
         document.getElementById(`editTalla${currentTalla}`).value = sumaTotalTalla;
     }
-
     cerrarModalColores();
 }
 
-// NUEVA FUNCIÓN: VER EL RESUMEN DETALLADO TOCANDO LA PRENDA
 function verResumenPrenda(index) {
     const prenda = cachePrendas[index];
     document.getElementById('detailTitle').textContent = prenda.nombre;
     document.getElementById('detailCategory').textContent = prenda.categoria || 'Sin Categoría';
-    
     const contenedor = document.getElementById('detailContentContainer');
     contenedor.innerHTML = '';
 
     let estructuraColores;
-    try {
-        estructuraColores = JSON.parse(prenda.colores);
-    } catch(e) {
-        estructuraColores = { S: {}, M: {}, L: {}, XL: {} };
-    }
+    try { estructuraColores = JSON.parse(prenda.colores); } catch(e) { estructuraColores = { S: {}, M: {}, L: {}, XL: {} }; }
 
     const tallasDisponibles = ['S', 'M', 'L', 'XL'];
-    let tieneDesglose = false;
-
     tallasDisponibles.forEach(talla => {
         const bloqueColores = estructuraColores[talla] || {};
         const listaClaves = Object.keys(bloqueColores);
@@ -231,7 +204,6 @@ function verResumenPrenda(index) {
             section.innerHTML = `<div class="detail-size-title">Talla ${talla} (Total: ${stockTotalTalla})</div>`;
             
             if(listaClaves.length > 0) {
-                tieneDesglose = true;
                 listaClaves.forEach(color => {
                     const div = document.createElement('div');
                     div.className = 'detail-color-line';
@@ -248,13 +220,10 @@ function verResumenPrenda(index) {
     if(contenedor.innerHTML === '') {
         contenedor.innerHTML = '<p style="text-align:center; color:var(--ios-secondary-text); font-size:13px;">Esta prenda no cuenta con stock en almacén.</p>';
     }
-
     document.getElementById('detailModal').style.display = 'flex';
 }
 
-function cerrarModalDetalle() {
-    document.getElementById('detailModal').style.display = 'none';
-}
+function cerrarModalDetalle() { document.getElementById('detailModal').style.display = 'none'; }
 
 function ejecutarBusquedaCombinada() {
     const busqueda = document.getElementById('searchBar').value.toLowerCase().trim();
@@ -297,7 +266,6 @@ function editarCategoriaMadre(oldCat) {
     .finally(() => msg.style.display = 'none');
 }
 
-// ENVÍO DE NUEVA PRENDA (INCLUYE EL JSON EN TEXTO)
 document.getElementById('formNuevo').addEventListener('submit', function(e) {
     e.preventDefault();
     if (!document.getElementById('imageData').value) { alert('Por favor, selecciona una foto.'); return; }
@@ -312,7 +280,7 @@ document.getElementById('formNuevo').addEventListener('submit', function(e) {
         tallaM: document.getElementById('tallaM').value,
         tallaL: document.getElementById('tallaL').value,
         tallaXL: document.getElementById('tallaXL').value,
-        colores: JSON.stringify(coloresRegistro), // Texto plano listo para la celda
+        colores: JSON.stringify(coloresRegistro), 
         imageData: document.getElementById('imageData').value,
         imageType: document.getElementById('imageType').value,
         imageName: document.getElementById('imageName').value
@@ -323,15 +291,12 @@ document.getElementById('formNuevo').addEventListener('submit', function(e) {
         msg.textContent = "Guardado con éxito."; msg.className = "banner-alert alert-success"; msg.style.display = "block";
         document.getElementById('formNuevo').reset(); document.getElementById('imagePreview').style.display = 'none';
         ['tallaS', 'tallaM', 'tallaL', 'tallaXL'].forEach(id => document.getElementById(id).value = 0);
-        
-        // Limpiar memoria de colores del formulario
         coloresRegistro = { S: {}, M: {}, L: {}, XL: {} };
         poolColoresPrenda = [];
     })
     .finally(() => { btn.disabled = false; setTimeout(() => msg.style.display = 'none', 3000); });
 });
 
-// DESPLIEGUE DEL MODAL DE EDICIÓN (RECONSTRUYE LOS COLORES)
 function launchEditModal(index) {
     const prenda = cachePrendas[index];
     document.getElementById('editMensaje').style.display = 'none';
@@ -346,14 +311,20 @@ function launchEditModal(index) {
     document.getElementById('editTallaL').value = prenda.tallaL;
     document.getElementById('editTallaXL').value = prenda.tallaXL;
     
-    // Mapear los colores del Excel a la memoria temporal de edición
+    // CORRECCIÓN AL PASO 1: Asegura e inicializa de forma estricta las llaves para productos antiguos
     try {
         coloresEdicion = JSON.parse(prenda.colores);
+        if (typeof coloresEdicion !== 'object' || coloresEdicion === null) {
+            coloresEdicion = {};
+        }
     } catch(e) {
-        coloresEdicion = { S: {}, M: {}, L: {}, XL: {} };
+        coloresEdicion = {};
     }
+    
+    ['S','M','L','XL'].forEach(t => {
+        if (!coloresEdicion[t]) coloresEdicion[t] = {};
+    });
 
-    // Llenar el pool del producto con todos los nombres de colores guardados
     poolColoresPrenda = [];
     ['S','M','L','XL'].forEach(t => {
         if(coloresEdicion[t]) {
@@ -370,6 +341,45 @@ function launchEditModal(index) {
 
 function closeModal() { document.getElementById('editModal').style.display = 'none'; }
 
+// NUEVA FUNCIÓN COMPLETA: ACCIÓN DE ELIMINACIÓN DESDE EL CELULAR
+function eliminarPrendaActual() {
+    const rowNum = document.getElementById('editRowNum').value;
+    const nombrePrenda = document.getElementById('editNombre').value;
+    
+    if (confirm(`¿Estás seguro de que deseas eliminar "${nombrePrenda}" por completo del almacén? Esta acción no se puede deshacer.`)) {
+        const btnDelete = document.getElementById('btnDeletePrenda');
+        const msg = document.getElementById('editMensaje');
+        
+        btnDelete.disabled = true;
+        btnDelete.textContent = "Eliminando del almacén...";
+        msg.style.display = 'none';
+
+        fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: "eliminar", rowNumber: rowNum })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === "éxito") {
+                msg.textContent = "Producto eliminado exitosamente.";
+                msg.className = "banner-alert alert-success";
+                msg.style.display = "block";
+                setTimeout(() => { closeModal(); cargarDatosBase(); }, 1200);
+            } else { throw new Error(res.mensaje); }
+        })
+        .catch(() => {
+            msg.textContent = "Error al intentar eliminar la prenda.";
+            msg.className = "banner-alert alert-error";
+            msg.style.display = "block";
+        })
+        .finally(() => {
+            btnDelete.disabled = false;
+            btnDelete.textContent = "Eliminar Prenda del Almacén";
+        });
+    }
+}
+
 document.getElementById('formEdit').addEventListener('submit', function(e) {
     e.preventDefault();
     const btn = document.getElementById('btnSaveEdit'); const msg = document.getElementById('editMensaje');
@@ -384,7 +394,7 @@ document.getElementById('formEdit').addEventListener('submit', function(e) {
         tallaM: document.getElementById('editTallaM').value,
         tallaL: document.getElementById('editTallaL').value,
         tallaXL: document.getElementById('editTallaXL').value,
-        colores: JSON.stringify(coloresEdicion) // Sube los colores modificados
+        colores: JSON.stringify(coloresEdicion)
     };
 
     const nuevaImg = document.getElementById('editImageData').value;
